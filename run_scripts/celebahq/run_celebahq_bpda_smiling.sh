@@ -3,6 +3,7 @@ cd ../..
 
 SEED1=$1
 SEED2=$2
+NUM_SAMPLES=${3:-5}
 
 for classifier_name in celebahq__Smiling; do
   for t in 500; do
@@ -11,7 +12,7 @@ for classifier_name in celebahq__Smiling; do
         for data_seed in $SEED2; do
 
           CUDA_VISIBLE_DEVICES=0,1,2,3 python eval_sde_adv_bpda.py --exp ./exp_results --config celeba.yml \
-            -i celebahq-adv-$t-eps$adv_eps-2x4-disc-bpda-rev \
+            -i celebahq-adv-$t-eps$adv_eps-2x4-disc-bpda-rev-ns${NUM_SAMPLES} \
             --t $t \
             --adv_eps $adv_eps \
             --adv_batch_size 2 \
@@ -22,6 +23,7 @@ for classifier_name in celebahq__Smiling; do
             --diffusion_type celebahq-ddpm \
             --eot_defense_reps 20 \
             --eot_attack_reps 15 \
+            --num_samples $NUM_SAMPLES
 
         done
       done
