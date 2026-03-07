@@ -3,6 +3,7 @@ cd ../..
 
 SEED1=$1
 SEED2=$2
+NUM_SAMPLES=${3:-5}
 
 for t in 100; do
   for adv_eps in 0.031373; do
@@ -10,7 +11,7 @@ for t in 100; do
       for data_seed in $SEED2; do
 
         CUDA_VISIBLE_DEVICES=0 python eval_sde_adv_bpda.py --exp ./exp_results --config cifar10.yml \
-          -i cifar10-robust_adv-$t-eps$adv_eps-200x1-bm0-t0-end1e-5-cont-bpda \
+          -i cifar10-robust_adv-$t-eps$adv_eps-200x1-bm0-t0-end1e-5-cont-bpda-ns${NUM_SAMPLES} \
           --t $t \
           --adv_eps $adv_eps \
           --adv_batch_size 10 \
@@ -21,6 +22,7 @@ for t in 100; do
           --data_seed $data_seed \
           --diffusion_type sde \
           --score_type score_sde \
+          --num_samples $NUM_SAMPLES
 
       done
     done
