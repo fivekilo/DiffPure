@@ -50,8 +50,8 @@ RUN pip install numpy==1.19.4 \
                 matplotlib==3.3.0 \
                 tqdm==4.56.1 \
                 tensorboardX==2.0 \
-                seaborn==0.10.1 \
-                pandas==1.2.0 \
+                seaborn \
+                pandas>=1.3.5 \
                 requests==2.25.0 \
                 xvfbwrapper==0.2.9 \
                 torchdiffeq==0.2.1 \
@@ -60,4 +60,4 @@ RUN pip install numpy==1.19.4 \
                 Ninja \
                 foolbox \
                 torchsde \
-                git+https://github.com/RobustBench/robustbench.git
+                git+https://github.com/RobustBench/robustbench.git@v1.0
