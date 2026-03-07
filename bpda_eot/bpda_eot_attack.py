@@ -13,6 +13,7 @@
 
 import torch
 import torch.nn.functional as F
+import time
 
 criterion = torch.nn.CrossEntropyLoss()
 
@@ -176,10 +177,12 @@ class BPDA_EOT_Attack():
         for counter in range(n_batches):
             X_batch = X[counter * batch_size:min((counter + 1) * batch_size, X.shape[0])].clone().to(X.device)
             y_batch = y[counter * batch_size:min((counter + 1) * batch_size, X.shape[0])].clone().to(X.device)
-
+            t_start=time.time()
             class_batch, ims_adv_batch = self.attack_batch(X_batch.contiguous(), y_batch.contiguous())
             class_path = torch.cat((class_path, class_batch), dim=1)
             ims_adv = torch.cat((ims_adv, ims_adv_batch), dim=0)
+            t_end=time.time()
+            print(f"attack {counter}-th batch in {t_end-t_start} seconds")
             print(f'finished {counter}-th batch in attack_all')
 
         return class_path, ims_adv
