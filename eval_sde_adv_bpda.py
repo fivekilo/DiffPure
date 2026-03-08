@@ -114,28 +114,31 @@ class SDE_Adv_Model(nn.Module):
 
     def classify_with_sampling(self, x):
         """
-        对输入图像进行多次加噪去噪采样，取分类器输出的平均值
+        对输入图像进行多次加噪去噪采样，取分类器输出的平均值（CUDA批量并行版本）
         """
         counter = self.counter.item()
-
+        print(f'Sample for {self.num_samples} times')
         if "imagenet" in self.args.domain:
             x = F.interpolate(x, size=(256, 256), mode="bilinear", align_corners=False)
 
-        all_outputs = []
-        for i in range(self.num_samples):
-            x_re = self.runner.image_editing_sample(
-                (x - 0.5) * 2, bs_id=counter + i, tag=self.tag
+        batch_size = x.shape[0]
+
+        x_expanded = x.repeat(self.num_samples, 1, 1, 1)
+
+        x_re = self.runner.image_editing_sample(
+            (x_expanded - 0.5) * 2, bs_id=counter, tag=self.tag
+        )
+
+        if "imagenet" in self.args.domain:
+            x_re = F.interpolate(
+                x_re, size=(224, 224), mode="bilinear", align_corners=False
             )
 
-            if "imagenet" in self.args.domain:
-                x_re = F.interpolate(
-                    x_re, size=(224, 224), mode="bilinear", align_corners=False
-                )
+        outputs = self.resnet((x_re + 1) * 0.5)
 
-            out = self.resnet((x_re + 1) * 0.5)
-            all_outputs.append(out)
+        outputs = outputs.view(self.num_samples, batch_size, -1)
+        avg_output = outputs.mean(dim=0)
 
-        avg_output = torch.stack(all_outputs, dim=0).mean(dim=0)
         self.counter += 1
         return avg_output
 
