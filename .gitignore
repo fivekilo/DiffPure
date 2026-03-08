@@ -1,2 +1,8 @@
-实验结果.txt
-修改方案_multiple_sampling.md
+__pycache__
+dataset
+exp_results
+models
+pretrained
+temp.txt
+run_scripts/cifar10/cifar_rand_output.log
+.gitignore
